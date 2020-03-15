@@ -2,105 +2,190 @@ package RubberDuckRace;
 
 import java.util.*;
 
+/**
+ * Skal jeg også have en equals i den her klasse?
+ */
 
+/**
+ * Jeg løb ind i at jeg ikke kunne få mit gamle program til at virke, da jeg prøvede at lave remove metoden,
+ * derfor valgte jeg at starte forfra, og kigge på hvad jeg havde haft af andre tanker til, hvordan man kunne lave systemet.
+ *
+ * Jeg har dog mange problemer med test klasserne, og jeg kan ikke få det til at virke
+ */
 public class FiFoRubberDuckRace
 {
+    /**
+     * Declaration group as  List Integer Array (group)
+     * and
+     * result as Arraylist integer
+     */
+    private ArrayList<Integer>[] group;
+    private ArrayList<Integer> result;
 
-    public int GetResult(ArrayList<Integer> input, int count)
+    public FiFoRubberDuckRace()
+    {}
+
+    public FiFoRubberDuckRace(ArrayList<Integer>[] group, ArrayList<Integer> result)
     {
-        /**
-         * Opret antallet af ArrayLister der er angivet i count + 1 (ellers java.lang.ArrayIndexOutOfBoundsException)
-         */
-        int j = 0;
-        ArrayList<Integer> group[] = new ArrayList[count+1];
-        for (int countArrayGroup = 0; countArrayGroup <= count; countArrayGroup++)
-        {
-            group[countArrayGroup] = new ArrayList<>();
-            //System.out.println(group[countArrayGroup]);
-        }
+        this.group = group;
+        this.result = result;
+    }
+
+    /**
+     * Skal jeg bruge dem her?
+     * @return String
+     */
+    @Override
+    public String toString()
+    {
+        return "FiFoRubberDuckRace{" +
+                "group=" + Arrays.toString(group) +
+                ", result=" + result +
+                '}';
+    }
+
+    /**
+     * Skal jeg bruge dem her?
+     * @return int
+     */
+    @Override
+    public int hashCode()
+    {
+        int result1 = Objects.hash(result);
+        result1 = 31 * result1 + Arrays.hashCode(group);
+        return result1;
+    }
+
+    /**
+     * Recusive method that return the winner number
+     * @param input
+     * @param queues
+     * @return int
+     */
+    public int GetResult(ArrayList<Integer> input, int queues)
+    {
+        makeArrayLists(queues);
+
+        putNumberInTheCreatedArrayLists(input, queues);
+
+        RemoveRubberDucks(input, queues);
+
+        JoinAllArraysToArrayList(queues);
 
         /**
-         * Fordel antallet af input i input.size af ArrayList
-         * Brug for loop
-         */
-        for (int i = 0; i < input.size(); i++)
-        {
-            group[j].add(input.get(i));
-            System.out.println("Fordel antallet: " + group[j]);
-            j++;
-            if  (j == count)
-            {
-                j = 0;
-            }
-            /**
-             * Randomize de joinede arrayList
-             */
-            Collections.shuffle(group[j]);
-        }
-
-
-        System.out.println("Shuffle: " + group[j]);
-
-
-
-
-        /**
-         * For loop der fjerner input.size() - (count-count)
-         * Antallet af tal der skal fjernes
-         */
-        int remove = input.size() - (count*count);
-
-        for (int i = 0; i < remove; i++)
-        {
-            System.out.println("Gets removed: " + group[j].get(group[j].size() - 1));
-            group[j].remove(group[j].size() - 1);
-
-            j++;
-            if  (j == count)
-            {
-                j = 0;
-            }
-            System.out.println("What is left: " + group[j]);
-        }
-
-
-        /**
-         * Joine alle arrayList op igen i en for loop
-         */
-        ArrayList<Integer> result = new ArrayList<>();
-
-        for (int i = 0; i < count; i++)
-        {
-            result.addAll(group[i]);
-
-            j++;
-            if  (j == count)
-            {
-                j = 0;
-            }
-        }
-        System.out.println("Joined ArrayLists: " + result);
-
-
-
-        /**
-         * If statement der retunere hvis der kun er en tilbage
+         * If statement der retunere hvis ArrayList kun har et nummer tilbage
          */
         if (result.size() == 1)
         {
-
-            double resultNumber = result.get(0);
-            double percentage = (float) ((resultNumber/100)*100.0);
-            /**
-             * Not right!
-             */
-            System.out.println("What was the probability for the number to win? " + percentage + "%");
-            System.out.println("Winner!");
             return result.get(0);
         }
+
         /**
-         * Call on the method we are in - 1
+         * Call on the method we are in - 1 to queues, so the room for rubber ducks get smaller and smaller
          */
-        return GetResult(result, count - 1);
+        return GetResult(result, queues - 1);
     }
+
+    /**
+     * Opret antallet af ArrayLister der er angivet i queues + 1 (ellers java.lang.ArrayIndexOutOfBoundsException)
+     * @return ArrayList<Integer>[]
+     */
+    public ArrayList<Integer>[] makeArrayLists(int queues)
+    {
+        /**
+         * Initialize group with Arraylist and queues
+         * Allocating memory to arrays
+         */
+        group = new ArrayList[queues+1];
+
+        for (int countArrayGroup = 0; countArrayGroup <= queues; countArrayGroup++)
+        {
+            group[countArrayGroup] = new ArrayList<>();
+        }
+        return group;
+    }
+
+    /**
+     * Fordel antallet af inputs i input.size af ArrayList
+     * Brug for loop
+     * @return int
+     */
+    public int putNumberInTheCreatedArrayLists(ArrayList<Integer> input, int queues)
+    {
+        int howManyRoundsOfQueues = 0;
+
+        /**
+         * Equally distributes howManyRoundsOfQueues in the queues
+         */
+        for (int inputNumber : input)
+        {
+            group[howManyRoundsOfQueues].add(inputNumber);
+            System.out.println("Equally distributes numbers: " + group[howManyRoundsOfQueues]);
+
+            /**
+             * Equally distributes howManyRoundsOfQueues in the queues
+             */
+            howManyRoundsOfQueues++;
+            if (howManyRoundsOfQueues == queues)
+            {
+                howManyRoundsOfQueues = 0;
+            }
+        }
+        return howManyRoundsOfQueues;
+    }
+
+    /**
+     * For loop der fjerner det sidste tal i hvert Array med input.size() - ((queues - 1)*(queues - 1))
+     * Antallet af tal der skal fjernes
+     * @param input
+     * @param queues
+     * @return int
+     */
+    public int RemoveRubberDucks(ArrayList<Integer> input, int queues)
+    {
+        int howManyRoundsOfQueues = 0;
+
+        int remove = input.size() - ((queues - 1)*(queues - 1));
+
+        /**
+         * Take the arraylist with the first array and remove the last number and so on
+         */
+        for (int i = 0; i < remove; i++)
+        {
+            System.out.println("Numbers in ArrayList: " + group[howManyRoundsOfQueues]);
+
+            int notMakingItRubberDucks = group[howManyRoundsOfQueues].remove(group[howManyRoundsOfQueues].size() - 1);
+
+            System.out.println("Gets removed: " + notMakingItRubberDucks);
+
+            howManyRoundsOfQueues++;
+            if  (howManyRoundsOfQueues == queues)
+            {
+                howManyRoundsOfQueues = 0;
+            }
+        }
+        return howManyRoundsOfQueues;
+    }
+
+    /**
+     * Join alle arrayList op igen i en for loop
+     * @return ArrayList<Integer>
+     */
+    public ArrayList<Integer> JoinAllArraysToArrayList(int queues)
+    {
+        result = new ArrayList<>();
+        for (int i = 0; i < queues; i++)
+        {
+            result.addAll(group[i]);
+        }
+
+        /**
+         * Randomize de joinede arrayList
+         */
+        Collections.shuffle(result);
+        System.out.println("Shuffle joined ArrayList: " + result);
+
+        return result;
+    }
+
 }
