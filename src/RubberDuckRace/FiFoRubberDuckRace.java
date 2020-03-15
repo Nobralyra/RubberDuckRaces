@@ -77,6 +77,7 @@ public class FiFoRubberDuckRace
          */
         if (result.size() == 1)
         {
+            Winner();
             return result.get(0);
         }
 
@@ -186,6 +187,18 @@ public class FiFoRubberDuckRace
         System.out.println("Shuffle joined ArrayList: " + result);
 
         return result;
+    }
+
+    /**
+     * Calculate the procentage for a number to win
+     * Because the numbers starts on a random place, they all have an equal chance to win
+     * In the first round the first 81 out of 100 goes to the next round and so on.
+     */
+    public void Winner()
+    {
+        double percentage = ((81.0/(10*10))*(64.0/(9*9))*(49.0/(8*8))*(36.0/(7*7))*(25.0/(6*6))*(16.0/(5*5))*(9.0/(4*4))*(4.0/(3*3))*(1.0/(2*2))*(1.0/(1))/100)*100;
+        System.out.println("What was the probability for the number to win? " + percentage + "%");
+        System.out.println("Winner!");
     }
 
 }
